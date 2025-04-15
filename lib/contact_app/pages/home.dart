@@ -6,6 +6,7 @@ import 'package:state_managment/contact_app/core/theme/strings.dart';
 import 'package:state_managment/contact_app/model/user_model.dart';
 
 import '../core/config/app_routes.dart';
+import '../core/theme/widgets.dart';
 
 class Home extends StatefulWidget {
   final List<User> userList;
@@ -16,30 +17,40 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int index1 = 0;
-  int index = 0;
   final controllerText = TextEditingController();
   final controller = ScrollController();
-
+int index=0;
   @override
   void dispose() {
     controllerText.dispose();
     controller.dispose();
     super.dispose();
   }
-
+  @override
   @override
   Widget build(BuildContext context) {
-    final String imgUrl = widget.userList[index1].imgUrl;
     final size = MediaQuery.sizeOf(context);
 
+    if (widget.userList.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.white,
+          title: Text(AppStrings.contacts),
+        ),
+        backgroundColor: AppColors.white,
+        body: Center(child: AddButton()),
+        floatingActionButton: const AddButton(),
+      );
+    }
+
     return Scaffold(
-      appBar: _buildAppBar(imgUrl, () {}),
+      appBar: _buildAppBar(widget.userList[0].imgUrl, () {}),
+      backgroundColor: AppColors.white,
+      floatingActionButton: const AddButton(),
       body: Padding(
-        padding: EdgeInsets.all(AppDimens.d10),
+        padding: const EdgeInsets.all(AppDimens.d10),
         child: SingleChildScrollView(
           controller: controller,
-          scrollDirection: Axis.vertical,
           child: Column(
             children: [
               SearchWidget(size: size, controllerText: controllerText),
@@ -48,22 +59,38 @@ class _HomeState extends State<Home> {
               const SizedBox(height: AppDimens.d12),
               Column(
                 children: [
-                  for (var o in widget.userList)
+                  for (var i = 0; i < widget.userList.length; i++)
                     Column(
                       children: [
                         GestureDetector(
-                          onTap:(){},/// edit page ga otadi
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              "edit",
+                              arguments: widget.userList[i],
+                            );
+                          },
                           child: ListTile(
-                            leading: ClipOval(child: Image.asset(o.imgUrl)),
+                            leading: ClipOval(child: Image.asset(widget.userList[i].imgUrl)),
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
                                   child: Text(
-                                    o.name,
+                                    widget.userList[i].name,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      widget.userList.removeAt(i);
+                                    });
+                                  },
+                                  icon: AppIcons.delete,
                                 ),
                                 IconButton(
                                   onPressed: () {},
@@ -78,8 +105,6 @@ class _HomeState extends State<Home> {
                     ),
                 ],
               ),
-
-
             ],
           ),
         ),
@@ -89,6 +114,7 @@ class _HomeState extends State<Home> {
 
   AppBar _buildAppBar(String imgUrl, void Function() onPressed) {
     return AppBar(
+      backgroundColor: AppColors.white,
       title: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -119,104 +145,6 @@ class _HomeState extends State<Home> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class SliverContact extends StatelessWidget {
-  const SliverContact({
-    super.key,
-    required this.size,
-    required this.controller,
-  });
-
-  final Size size;
-  final ScrollController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: AppDimens.d120,
-      width: size.width - 2,
-      child: CustomScrollView(
-        controller: controller,
-        scrollDirection: Axis.horizontal,
-        slivers: [
-          SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              return Row(
-                children: [
-                  for (var o in userList)
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: AppDimens.d100,
-                          width: AppDimens.d100,
-                          child: GestureDetector(
-                            onTap: (){Navigator.pushNamed(context, AppRoutes.edit);},
-                            child: Card(
-                              color: AppColors.black,
-                              child: Image.asset(
-                                o.imgUrl,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(child: Text(o.name,style: TextStyle(fontWeight: FontWeight.bold,fontSize: AppDimens.d16),))
-                      ],
-                    ),
-                ],
-              );
-            }),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SearchWidget extends StatelessWidget {
-  const SearchWidget({
-    super.key,
-    required this.size,
-    required this.controllerText,
-  });
-
-  final Size size;
-  final TextEditingController controllerText;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: AppDimens.d55,
-      width: size.width - 20,
-      child: Card(
-        color: AppColors.grey,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Center(
-          child: TextField(
-            controller: controllerText,
-            maxLength: 40,
-            decoration: InputDecoration(
-              counterText: "",
-              hintText: AppStrings.search,
-              hintStyle: TextStyle(color: AppColors.grey2),
-              suffixIcon: IconButton(
-                onPressed: () {},
-
-                ///metod
-                icon: AppIcons.search,
-              ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: AppDimens.d16,
-                vertical: AppDimens.d12,
-              ),
-            ),
-          ),
         ),
       ),
     );

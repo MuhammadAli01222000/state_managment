@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:state_managment/contact_app/core/config/app_routes.dart';
 import 'package:state_managment/contact_app/model/user_model.dart';
 import 'contact_app/pages/home.dart';
 
@@ -18,7 +19,7 @@ class ContactApp extends StatelessWidget {
       ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-
+routes: AppRoutes.routes,
         home: Home(userList: userList),
       ),
     );
