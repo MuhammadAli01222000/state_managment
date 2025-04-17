@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:state_managment/app.dart';
 
 import '../model/user_model.dart';
 
@@ -27,6 +26,26 @@ static void edit(String email, int number, int number2, int index) {
    number: number,
    number2: number2,
    email: email,
+  );
+ }
+ void updateUser(User updatedUser) {
+  for (int i = 0; i < userList.length; i++) {
+   if (userList[i].name == updatedUser.name) {
+    userList[i] = updatedUser;
+    break;
+   }
+  }
+ }
+
+ void add(String name, String email, int number, int number2, String imgUrl) {
+  userList.add(
+   User(
+    name: name,
+    email: email,
+    number: number,
+    number2: number2,
+    imgUrl: imgUrl,
+   ),
   );
  }
 

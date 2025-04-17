@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
-void showInfoSnackBar(BuildContext context, String message) {
+
+import '../../model/user_model.dart';
+
+void showInfoSnackBar(
+  User? user, {
+  required BuildContext context,
+  required String message,
+}) {
   final snackBar = SnackBar(
+    action: SnackBarAction(
+      label: "Cancel",
+      onPressed: () {
+        if (user == null) return userList.add(user!);
+        print("${user.name} qoshildi");
+      },
+    ),
     content: Row(
       children: [
         Icon(Icons.info, color: Colors.white),

@@ -41,7 +41,7 @@ class _AppTextFieldState extends State<AppTextField> {
         } else {
           setState(() {
             showError = !value.contains('@');
-            showError = value.length<4;
+            showError = value.length<3;
           });
         }
       },

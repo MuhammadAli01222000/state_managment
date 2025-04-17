@@ -21,6 +21,13 @@ class _EditState extends State<Edit> {
   TextEditingController emailController = TextEditingController();
   final AppController appController = AppController();
   @override
+  void initState() {
+    super.initState();
+   phoneController.text = widget.user.number.toString();
+    phoneController2.text = widget.user.number2.toString();
+    emailController.text = widget.user.email;
+  }
+  @override
   Widget build(BuildContext context) {
     final bool checkInput = appController.checkInput(
       phoneController.text.length,
@@ -75,7 +82,6 @@ class _EditState extends State<Edit> {
               controller: phoneController,
             ),
             const SizedBox(height: AppDimens.d24),
-
             AppTextField(
               hintText: AppStrings.number2,
               errorText: AppStrings.errorNumber,
@@ -98,9 +104,21 @@ class _EditState extends State<Edit> {
               text: "Add",
               widget: widget,
               onTap: () {
-                Navigator.pop(context);
-              },
-              check: checkInput,
+                ///user edit
+                final updatedUser = User(
+                  name: widget.user.name,
+                  imgUrl: widget.user.imgUrl,
+                  number: int.tryParse(phoneController.text) ?? 0,
+                  number2: int.tryParse(phoneController2.text) ?? 0,
+                  email: emailController.text,
+                );
+
+                
+                appController.updateUser(updatedUser);
+
+                // Qaytish
+                Navigator.pop(context, updatedUser);
+              }, check: checkInput,
             ),
             const SizedBox(height: AppDimens.d24),
           ],

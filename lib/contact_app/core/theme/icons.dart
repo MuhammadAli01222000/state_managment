@@ -5,7 +5,10 @@ import 'dimens.dart';
 
 sealed class AppIcons{
   static const edit=Icon(Icons.edit_note_sharp);
+  static const alfa=Icon(Icons.abc_rounded,size: AppDimens.d24,);
+  static const alfaNumber=Icon(Icons.numbers,size: AppDimens.d24,);
   static const delete=Icon(Icons.delete);
+  static const sort=Icon(Icons.sort);
   static const call=Icon(Icons.call_outlined);
   static const back=Icon(Icons.arrow_back_ios);
   static const message=Icon(Icons.email_outlined);

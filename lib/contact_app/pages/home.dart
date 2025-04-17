@@ -7,6 +7,7 @@ import 'package:state_managment/contact_app/model/user_model.dart';
 
 import '../core/config/app_routes.dart';
 import '../core/theme/widgets.dart';
+import '../core/utils/snack_bar.dart';
 
 class Home extends StatefulWidget {
   final List<User> userList;
@@ -17,16 +18,39 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
+  bool didUpdateWidget(covariant Home oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    return oldWidget.userList != userList;
+  }
+
   final controllerText = TextEditingController();
   final controller = ScrollController();
-int index=0;
+  int index = 0;
+  String selectedSort = "";
+
+  @override
+  late List<User> _userList;
+
+  @override
+  void initState() {
+    super.initState();
+    _userList = widget.userList;
+  }
+
   @override
   void dispose() {
     controllerText.dispose();
     controller.dispose();
     super.dispose();
   }
-  @override
+
+  final key = UniqueKey();
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
@@ -42,9 +66,12 @@ int index=0;
         floatingActionButton: const AddButton(),
       );
     }
-
     return Scaffold(
-      appBar: _buildAppBar(widget.userList[0].imgUrl, () {}),
+      key: key,
+      appBar: _buildAppBar(
+        InheritedData.of(context).listUser[index].imgUrl,
+        () {},
+      ),
       backgroundColor: AppColors.white,
       floatingActionButton: const AddButton(),
       body: Padding(
@@ -55,6 +82,38 @@ int index=0;
             children: [
               SearchWidget(size: size, controllerText: controllerText),
               const SizedBox(height: AppDimens.d12),
+
+              Align(
+                alignment: Alignment.bottomRight,
+                child: DropdownMenu<String>(
+                  trailingIcon: AppIcons.sort,
+                  initialSelection: selectedSort,
+                  width: 150,
+                  dropdownMenuEntries: const [
+                    DropdownMenuEntry(
+                      value: "az",
+                      label: "A-Z",
+                      leadingIcon: Icon(Icons.sort_by_alpha),
+                    ),
+                    DropdownMenuEntry(
+                      value: "za",
+                      label: "Z-A",
+                      leadingIcon: Icon(Icons.sort_by_alpha_outlined),
+                    ),
+                  ],
+                  onSelected: (value) {
+                    setState(() {
+                      selectedSort = value ?? "none";
+                      if (value == "az") {
+                        _userList.sort((a, b) => a.name.compareTo(b.name));
+                      } else if (value == "za") {
+                        _userList.sort((a, b) => b.name.compareTo(a.name));
+                      }
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: AppDimens.d12),
               SliverContact(size: size, controller: controller),
               const SizedBox(height: AppDimens.d12),
               Column(
@@ -64,20 +123,24 @@ int index=0;
                       children: [
                         GestureDetector(
                           onTap: () {
+                            print(widget.userList[i]);
                             Navigator.pushNamed(
                               context,
-                              "edit",
+                              AppRoutes.edit,
                               arguments: widget.userList[i],
                             );
                           },
                           child: ListTile(
-                            leading: ClipOval(child: Image.asset(widget.userList[i].imgUrl)),
+                            leading: ClipOval(
+                              child: Image.asset(widget.userList[i].imgUrl),
+                            ),
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
                                   child: Text(
-                                    widget.userList[i].name,
+                                    "${widget.userList[i].name}"
+                                    "\n${widget.userList[i].number}",
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -86,14 +149,26 @@ int index=0;
                                 ),
                                 IconButton(
                                   onPressed: () {
+                                    final removedName = widget.userList[i].name;
                                     setState(() {
                                       widget.userList.removeAt(i);
                                     });
+                                    showInfoSnackBar(
+                                      null,
+                                      context: context,
+                                      message: '$removedName removed',
+                                    );
                                   },
                                   icon: AppIcons.delete,
                                 ),
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      AppRoutes.edit,
+                                      arguments: widget.userList[i],
+                                    );
+                                  },
                                   icon: AppIcons.edit,
                                 ),
                               ],

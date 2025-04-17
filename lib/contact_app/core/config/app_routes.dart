@@ -11,13 +11,14 @@ sealed class AppRoutes {
   static const add = "add";
 
   static Map<String, WidgetBuilder> routes = {
-    "home": (context) => Home(userList: []),
-    "edit": (context) {
+    home: (context) => Home(userList: []),
+    edit: (context) {
       final user = ModalRoute.of(context)!.settings.arguments as User;
       return Edit(user: user);
     },
-    "add": (context) => const Add(),
+    add: (context) => const Add(),
   };
+
   static back(context) {
     Navigator.pop(context);
   }

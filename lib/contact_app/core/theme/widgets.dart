@@ -54,7 +54,11 @@ class SliverContact extends StatelessWidget {
                           width: AppDimens.d100,
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, AppRoutes.edit);
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.edit,
+                                arguments: o,
+                              );
                             },
                             child: Card(
                               color: AppColors.black,
@@ -169,9 +173,7 @@ class AppButtons extends StatelessWidget {
 }
 
 class UserIcons extends StatelessWidget {
-  const UserIcons({
-    super.key,
-  });
+  const UserIcons({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -186,3 +188,4 @@ class UserIcons extends StatelessWidget {
     );
   }
 }
+

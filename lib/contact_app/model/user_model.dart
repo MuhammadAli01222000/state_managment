@@ -58,7 +58,7 @@ List<User> userList = [
     email: "example8@gmail.com",
   ),
   User(
-    name: "Ilhom",
+    name: "Last User",
     imgUrl: "assets/user_images/img_5.png",
     number: 949999999,
     number2: 1233456789,
@@ -85,7 +85,6 @@ class InheritedData extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant InheritedData oldWidget) {
-    //     return oldWidget.listUser!=listUser;
     return user != oldWidget.user;
   }
 
