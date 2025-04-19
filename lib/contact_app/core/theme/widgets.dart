@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:state_managment/contact_app/core/theme/strings.dart';
+import 'package:state_managment/contact_app/pages/search_page.dart';
 
 import '../../model/user_model.dart';
 import '../config/app_routes.dart';
@@ -87,34 +88,53 @@ class SliverContact extends StatelessWidget {
   }
 }
 
-class SearchWidget extends StatelessWidget {
+class SearchWidget extends StatefulWidget {
+final void Function()? onTap;
   const SearchWidget({
     super.key,
     required this.size,
-    required this.controllerText,
+    required this.controllerText, this.onTap,
   });
 
   final Size size;
   final TextEditingController controllerText;
 
   @override
+  State<SearchWidget> createState() => _SearchWidgetState();
+}
+
+class _SearchWidgetState extends State<SearchWidget> {
+  @override
   Widget build(BuildContext context) {
+
     return SizedBox(
       height: AppDimens.d55,
-      width: size.width - 20,
+      width: widget.size.width - 20,
       child: Card(
         color: AppColors.grey,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Center(
           child: TextField(
-            controller: controllerText,
+            onTap:widget.onTap != null? (){
+    Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => SearchPage()),
+    );
+            }:(){},
+            controller: widget.controllerText,
             maxLength: 40,
             decoration: InputDecoration(
               counterText: "",
               hintText: AppStrings.search,
               hintStyle: TextStyle(color: AppColors.grey2),
               suffixIcon: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  for (var o in userList )
+                    if(o.name.toLowerCase()==widget.controllerText.text.toLowerCase()) Text("bor");
+
+                  Text("yoq");
+
+                },
 
                 ///metod
                 icon: AppIcons.search,
@@ -188,4 +208,3 @@ class UserIcons extends StatelessWidget {
     );
   }
 }
-

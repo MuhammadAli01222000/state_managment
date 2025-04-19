@@ -4,14 +4,15 @@ import 'package:state_managment/contact_app/core/theme/dimens.dart';
 import 'package:state_managment/contact_app/core/theme/icons.dart';
 import 'package:state_managment/contact_app/core/theme/strings.dart';
 import 'package:state_managment/contact_app/model/user_model.dart';
+import 'package:state_managment/contact_app/pages/search_page.dart';
 
 import '../core/config/app_routes.dart';
 import '../core/theme/widgets.dart';
 import '../core/utils/snack_bar.dart';
 
 class Home extends StatefulWidget {
-  final List<User> userList;
-  const Home({super.key, required this.userList});
+  final InheritedData inheritedData;
+  const Home({super.key, required this.inheritedData});
 
   @override
   State<Home> createState() => _HomeState();
@@ -26,7 +27,7 @@ class _HomeState extends State<Home> {
   @override
   bool didUpdateWidget(covariant Home oldWidget) {
     super.didUpdateWidget(oldWidget);
-    return oldWidget.userList != userList;
+    return oldWidget.inheritedData.listUser != userList;
   }
 
   final controllerText = TextEditingController();
@@ -34,13 +35,12 @@ class _HomeState extends State<Home> {
   int index = 0;
   String selectedSort = "";
 
-  @override
   late List<User> _userList;
 
   @override
   void initState() {
     super.initState();
-    _userList = widget.userList;
+    _userList = widget.inheritedData.listUser;
   }
 
   @override
@@ -55,7 +55,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
 
-    if (widget.userList.isEmpty) {
+    if (widget.inheritedData.listUser.isEmpty) {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.white,
@@ -80,67 +80,50 @@ class _HomeState extends State<Home> {
           controller: controller,
           child: Column(
             children: [
-              SearchWidget(size: size, controllerText: controllerText),
-              const SizedBox(height: AppDimens.d12),
-
-              Align(
-                alignment: Alignment.bottomRight,
-                child: DropdownMenu<String>(
-                  trailingIcon: AppIcons.sort,
-                  initialSelection: selectedSort,
-                  width: 150,
-                  dropdownMenuEntries: const [
-                    DropdownMenuEntry(
-                      value: "az",
-                      label: "A-Z",
-                      leadingIcon: Icon(Icons.sort_by_alpha),
-                    ),
-                    DropdownMenuEntry(
-                      value: "za",
-                      label: "Z-A",
-                      leadingIcon: Icon(Icons.sort_by_alpha_outlined),
-                    ),
-                  ],
-                  onSelected: (value) {
-                    setState(() {
-                      selectedSort = value ?? "none";
-                      if (value == "az") {
-                        _userList.sort((a, b) => a.name.compareTo(b.name));
-                      } else if (value == "za") {
-                        _userList.sort((a, b) => b.name.compareTo(a.name));
-                      }
-                    });
-                  },
-                ),
-              ),
               const SizedBox(height: AppDimens.d12),
               SliverContact(size: size, controller: controller),
+              sorted(),
+              const SizedBox(height: AppDimens.d12),
+              SearchWidget(
+                size: size,
+                controllerText: controllerText,
+                onTap: () {
+                  final searchPage = const SearchPage(key: ValueKey("search"));
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => searchPage),
+                  );
+                },
+              ),
+
               const SizedBox(height: AppDimens.d12),
               Column(
                 children: [
-                  for (var i = 0; i < widget.userList.length; i++)
+                  for (var i = 0; i < widget.inheritedData.listUser.length; i++)
                     Column(
                       children: [
                         GestureDetector(
                           onTap: () {
-                            print(widget.userList[i]);
                             Navigator.pushNamed(
                               context,
                               AppRoutes.edit,
-                              arguments: widget.userList[i],
+                              arguments: widget.inheritedData.listUser[i],
                             );
                           },
                           child: ListTile(
                             leading: ClipOval(
-                              child: Image.asset(widget.userList[i].imgUrl),
+                              child: Image.asset(
+                                widget.inheritedData.listUser[i].imgUrl,
+                              ),
                             ),
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
                                   child: Text(
-                                    "${widget.userList[i].name}"
-                                    "\n${widget.userList[i].number}",
+                                    "${widget.inheritedData.listUser[i].name}"
+                                    "\n${widget.inheritedData.listUser[i].number}",
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -149,9 +132,10 @@ class _HomeState extends State<Home> {
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    final removedName = widget.userList[i].name;
+                                    final removedName =
+                                        widget.inheritedData.listUser[i].name;
                                     setState(() {
-                                      widget.userList.removeAt(i);
+                                      widget.inheritedData.listUser.removeAt(i);
                                     });
                                     showInfoSnackBar(
                                       null,
@@ -166,7 +150,8 @@ class _HomeState extends State<Home> {
                                     Navigator.pushNamed(
                                       context,
                                       AppRoutes.edit,
-                                      arguments: widget.userList[i],
+                                      arguments:
+                                          widget.inheritedData.listUser[i],
                                     );
                                   },
                                   icon: AppIcons.edit,
@@ -182,6 +167,44 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Align sorted() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+
+        color: Colors.cyan,
+        child: DropdownMenu<String>(
+          trailingIcon: AppIcons.sort,
+          initialSelection: selectedSort,
+          width: 100,
+          dropdownMenuEntries: const [
+            DropdownMenuEntry(
+              value: "az",
+              label: "A-Z",
+              leadingIcon: Icon(Icons.sort_by_alpha),
+            ),
+            DropdownMenuEntry(
+              value: "za",
+              label: "Z-A",
+              leadingIcon: Icon(Icons.sort_by_alpha_outlined),
+            ),
+          ],
+          onSelected: (value) {
+            setState(() {
+              selectedSort = value ?? "none";
+              if (value == "az") {
+                _userList.sort((a, b) => a.name.compareTo(b.name));
+              } else if (value == "za") {
+                _userList.sort((a, b) => b.name.compareTo(a.name));
+              }
+            });
+          },
         ),
       ),
     );

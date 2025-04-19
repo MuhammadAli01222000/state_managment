@@ -11,7 +11,7 @@ sealed class AppRoutes {
   static const add = "add";
 
   static Map<String, WidgetBuilder> routes = {
-    home: (context) => Home(userList: []),
+    home: (context) => Home( inheritedData: InheritedData(user: userList[0], listUser: userList, child: Text('')),),
     edit: (context) {
       final user = ModalRoute.of(context)!.settings.arguments as User;
       return Edit(user: user);

@@ -33,7 +33,6 @@ class _AddState extends State<Add> {
   @override
   void initState() {
     super.initState();
-
     ///listin qilish uchun
     nameController.addListener(_show);
     phoneController.addListener(_show);
@@ -99,6 +98,7 @@ class _AddState extends State<Add> {
             ),
             const SizedBox(height: AppDimens.d24),
             const Spacer(),
+            /// todo listen
             ValueListenableBuilder<bool>(
               valueListenable: showButton,
               builder: (context, visible, child) {
@@ -125,7 +125,7 @@ class _AddState extends State<Add> {
                         Navigator.pop(context);
                         setState(() {});
                       },
-                      icon: AppIcons.back,
+                      icon: AppIcons.home,
                     );
               },
             ),
