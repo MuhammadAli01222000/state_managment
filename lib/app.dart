@@ -20,7 +20,7 @@ class ContactApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
 routes: AppRoutes.routes,
-        home: Home(userList: userList),
+        home: Home(inheritedData: InheritedData(user: userList[0], listUser:userList, child: Text(''))),
       ),
     );
   }
